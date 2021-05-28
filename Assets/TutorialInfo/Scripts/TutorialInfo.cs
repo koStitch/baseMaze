@@ -19,14 +19,17 @@ public class TutorialInfo : MonoBehaviour
 	// store a reference to the audio listener in the scene, allowing for muting of the scene during the overlay
 	public AudioListener mainListener;
 
-	// store a reference to the UI toggle which allows users to switch it off for future plays
-	public Toggle showAtStartToggle;
-
 	// string to store Prefs Key with name of preference for showing the overlay info
 	public static string showAtStartPrefsKey = "showLaunchScreen";
 
 	// used to ensure that the launch screen isn't more than once per play session if the project reloads the main scene
 	private static bool alreadyShownThisSession = false;
+
+    // we store user input in here for number of columns in level
+    public Text columnsInputField;
+
+    // we store user input in here for number of rows in level
+    public Text rowsInputField;
 
 
 	void Awake()
@@ -45,9 +48,6 @@ public class TutorialInfo : MonoBehaviour
 			{
 				showAtStart = PlayerPrefs.GetInt(showAtStartPrefsKey) == 1;
 			}
-
-			// set UI toggle to match the existing UI preference
-			showAtStartToggle.isOn = showAtStart;
 
 			// show the overlay info or continue to play the game
 			if (showAtStart) 
@@ -83,12 +83,15 @@ public class TutorialInfo : MonoBehaviour
 		overlay.SetActive (false);
 		mainListener.enabled = true;
 		Time.timeScale = 1f;
-	}
+        if (int.TryParse(columnsInputField.text, out int columns) && int.TryParse(rowsInputField.text, out int rows))
+        {
+            Completed.GameManager.instance.InitGame(columns, rows);
+        }
+    }
 
 	// set the boolean storing show at start status to equal the UI toggle's status
 	public void ToggleShowAtLaunch()
 	{
-		showAtStart = showAtStartToggle.isOn;
 		PlayerPrefs.SetInt(showAtStartPrefsKey, showAtStart ? 1 : 0);
 	}
 }

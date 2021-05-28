@@ -49,30 +49,10 @@ namespace Completed
 			
 			//Get a component reference to the attached BoardManager script
 			boardScript = GetComponent<BoardManager>();
-			
-			//Call the InitGame function to initialize the first level 
-			InitGame();
 		}
-
-        //this is called only once, and the paramter tell it to be called only after the scene was loaded
-        //(otherwise, our Scene Load callback would be called the very first load, and we don't want that)
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        static public void CallbackInitialization()
-        {
-            //register the callback to be called everytime the scene is loaded
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        //This is called each time a scene is loaded.
-        static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-        {
-            instance.level++;
-            instance.InitGame();
-        }
-
 		
 		//Initializes the game for each level.
-		void InitGame()
+		public void InitGame(int columns, int rows)
 		{
 			//While doingSetup is true the player can't move, prevent player from moving while title card is up.
 			doingSetup = true;
@@ -96,7 +76,7 @@ namespace Completed
 			enemies.Clear();
 			
 			//Call the SetupScene function of the BoardManager script, pass it current level number.
-			boardScript.SetupScene(level);
+			boardScript.SetupScene(level, columns, rows);
 			
 		}
 		

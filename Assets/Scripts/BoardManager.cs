@@ -26,8 +26,8 @@ namespace Completed
 		}
 		
 		
-		public int columns = 8; 										//Number of columns in our game board.
-		public int rows = 8;											//Number of rows in our game board.
+		private int columns; 										//Number of columns in our game board.
+		private int rows;											//Number of rows in our game board.
 		public Count wallCount = new Count (5, 9);						//Lower and upper limit for our random number of walls per level.
 		public Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
 		public GameObject exit;											//Prefab to spawn for exit.
@@ -42,7 +42,7 @@ namespace Completed
 		
 		
 		//Clears our list gridPositions and prepares it to generate a new board.
-		void InitialiseList ()
+		void InitialiseList (int columns, int rows)
 		{
 			//Clear our list gridPositions.
 			gridPositions.Clear ();
@@ -61,7 +61,7 @@ namespace Completed
 		
 		
 		//Sets up the outer walls and floor (background) of the game board.
-		void BoardSetup ()
+		void BoardSetup (int columns, int rows)
 		{
 			//Instantiate Board and set boardHolder to its transform.
 			boardHolder = new GameObject ("Board").transform;
@@ -129,13 +129,13 @@ namespace Completed
 		
 		
 		//SetupScene initializes our level and calls the previous functions to lay out the game board
-		public void SetupScene (int level)
+		public void SetupScene (int level, int columns, int rows)
 		{
 			//Creates the outer walls and floor.
-			BoardSetup ();
+			BoardSetup (columns, rows);
 			
 			//Reset our list of gridpositions.
-			InitialiseList ();
+			InitialiseList (columns, rows);
 			
 			//Instantiate a random number of wall tiles based on minimum and maximum, at randomized positions.
 			LayoutObjectAtRandom (wallTiles, wallCount.minimum, wallCount.maximum);
