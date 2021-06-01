@@ -26,10 +26,10 @@ namespace Completed
 		}
 		
 		
-		private int columns; 										//Number of columns in our game board.
-		private int rows;											//Number of rows in our game board.
-		public Count wallCount = new Count (5, 9);						//Lower and upper limit for our random number of walls per level.
-		public Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
+		private int columns; 										    //Number of columns in our game board.
+		private int rows;											    //Number of rows in our game board.
+		private Count wallCount = new Count (10, 20);				    //Lower and upper limit for our random number of walls per level.
+		private Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
 		public GameObject exit;											//Prefab to spawn for exit.
 		public GameObject[] floorTiles;									//Array of floor prefabs.
 		public GameObject[] wallTiles;									//Array of wall prefabs.
@@ -38,11 +38,15 @@ namespace Completed
 		public GameObject[] outerWallTiles;								//Array of outer tile prefabs.
 		
 		private Transform boardHolder;									//A variable to store a reference to the transform of our Board object.
-		private List <Vector3> gridPositions = new List <Vector3> ();	//A list of possible locations to place tiles.
-		
-		
-		//Clears our list gridPositions and prepares it to generate a new board.
-		void InitialiseList (int columns, int rows)
+		private List <Vector3> gridPositions = new List <Vector3> ();   //A list of possible locations to place tiles.
+        private Pathfinding pathfinding;                                //Reference to our pathfinding class witch will handle pathfinding algorithms
+        private Transform[,] visualNodeArray;                           //Array containing all grid nodes
+
+        public Pathfinding Pathfinding => pathfinding;                  //Pathfinding getter
+        public Transform[,] VisualNodeArray => visualNodeArray;         //Node array getter
+
+        //Clears our list gridPositions and prepares it to generate a new board.
+        void InitialiseList (int columns, int rows)
 		{
 			//Clear our list gridPositions.
 			gridPositions.Clear ();
@@ -58,40 +62,57 @@ namespace Completed
 				}
 			}
 		}
-		
-		
-		//Sets up the outer walls and floor (background) of the game board.
-		void BoardSetup (int columns, int rows)
-		{
-			//Instantiate Board and set boardHolder to its transform.
-			boardHolder = new GameObject ("Board").transform;
-			
-			//Loop along x axis, starting from -1 (to fill corner) with floor or outerwall edge tiles.
-			for(int x = -1; x < columns + 1; x++)
-			{
-				//Loop along y axis, starting from -1 to place floor or outerwall tiles.
-				for(int y = -1; y < rows + 1; y++)
-				{
-					//Choose a random tile from our array of floor tile prefabs and prepare to instantiate it.
-					GameObject toInstantiate = floorTiles[Random.Range (0,floorTiles.Length)];
-					
-					//Check if we current position is at board edge, if so choose a random outer wall prefab from our array of outer wall tiles.
-					if(x == -1 || x == columns || y == -1 || y == rows)
-						toInstantiate = outerWallTiles [Random.Range (0, outerWallTiles.Length)];
-					
-					//Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop, cast it to GameObject.
-					GameObject instance =
-						Instantiate (toInstantiate, new Vector3 (x, y, 0f), Quaternion.identity) as GameObject;
-					
-					//Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
-					instance.transform.SetParent (boardHolder);
-				}
-			}
-		}
-		
-		
-		//RandomPosition returns a random position from our list gridPositions.
-		Vector3 RandomPosition ()
+
+
+        //Sets up the outer walls and floor (background) of the game board.
+        void BoardSetup(int columns, int rows)
+        {
+            //Create pathfinding object using number of columns and rows our level(grid) will have
+            pathfinding = new Pathfinding(columns, rows);
+
+            //Instantiate Board and set boardHolder to its transform.
+            boardHolder = new GameObject("Board").transform;
+
+            //Stash the grid in local variable
+            var grid = pathfinding.GetGrid();
+
+            //Instantiate node array with grid size(grid width and height)
+            visualNodeArray = new Transform[grid.GetWidth(), grid.GetHeight()];
+
+            //Loop along x axis, starting from -1 (to fill corner) with floor or outerwall edge tiles.
+            for (int x = -1; x < grid.GetWidth() + 1; x++)
+            {
+                //Loop along y axis, starting from -1 to place floor or outerwall tiles.
+                for (int y = -1; y < grid.GetHeight() + 1; y++)
+                {
+                    //Choose a random tile from our array of floor tile prefabs and prepare to instantiate it.
+                    GameObject toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
+
+                    //Check if we current position is at board edge.
+                    bool boardEdge = x == -1 || x == grid.GetWidth() || y == -1 || y == grid.GetHeight();
+                    if (boardEdge)
+                    {
+                        //If so choose a random outer wall prefab from our array of outer wall tiles.
+                        toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)];
+                    }
+
+                    //Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop
+                    Transform visualNode = Instantiate(toInstantiate.transform, new Vector3(x, y, 0f), Quaternion.identity);
+
+                    //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
+                    visualNode.transform.SetParent(boardHolder);
+
+                    //Add ti node array only if the nodes position is inside of the playfield
+                    if (!boardEdge)
+                    {
+                        visualNodeArray[x, y] = visualNode;
+                    }
+                }
+            }
+        }
+
+        //RandomPosition returns a random position from our list gridPositions.
+        Vector3 RandomPosition ()
 		{
 			//Declare an integer randomIndex, set it's value to a random number between 0 and the count of items in our List gridPositions.
 			int randomIndex = Random.Range (0, gridPositions.Count);
@@ -108,7 +129,7 @@ namespace Completed
 		
 		
 		//LayoutObjectAtRandom accepts an array of game objects to choose from along with a minimum and maximum range for the number of objects to create.
-		void LayoutObjectAtRandom (GameObject[] tileArray, int minimum, int maximum)
+		void LayoutObjectAtRandom (GameObject[] tileArray, int minimum, int maximum, bool isWall = false)
 		{
 			//Choose a random number of objects to instantiate within the minimum and maximum limits
 			int objectCount = Random.Range (minimum, maximum+1);
@@ -123,8 +144,15 @@ namespace Completed
 				GameObject tileChoice = tileArray[Random.Range (0, tileArray.Length)];
 				
 				//Instantiate tileChoice at the position returned by RandomPosition with no change in rotation
-				Instantiate(tileChoice, randomPosition, Quaternion.identity);
-			}
+				var instantiatedObject = Instantiate(tileChoice, randomPosition, Quaternion.identity);
+
+                 //If we are creating a wall set it as unwalkable node in pathfinding
+                if (isWall)
+                {
+                    pathfinding.GetGrid().GetXY(instantiatedObject.transform.position, out int x, out int y);
+                    pathfinding.GetNode(x, y).SetIsWalkable(!pathfinding.GetNode(x, y).isWalkable);
+                }
+            }
 		}
 		
 		
@@ -138,7 +166,7 @@ namespace Completed
 			InitialiseList (columns, rows);
 			
 			//Instantiate a random number of wall tiles based on minimum and maximum, at randomized positions.
-			LayoutObjectAtRandom (wallTiles, wallCount.minimum, wallCount.maximum);
+			LayoutObjectAtRandom (wallTiles, wallCount.minimum, wallCount.maximum, true);
 			
 			//Instantiate a random number of food tiles based on minimum and maximum, at randomized positions.
 			LayoutObjectAtRandom (foodTiles, foodCount.minimum, foodCount.maximum);

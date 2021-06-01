@@ -19,15 +19,15 @@ namespace Completed
 		private Text levelText;									//Text to display current level number.
 		private GameObject levelImage;							//Image to block out level as levels are being set up, background for levelText.
 		private BoardManager boardScript;						//Store a reference to our BoardManager which will set up the level.
-		private int level = 1;									//Current level number, expressed in game as "Day 1".
+		private int level = 2;									//Current level number, expressed in game as "Day 1".
 		private List<Enemy> enemies;							//List of all Enemy units, used to issue them move commands.
 		private bool enemiesMoving;								//Boolean to check if enemies are moving.
 		private bool doingSetup = true;							//Boolean to check if we're setting up board, prevent Player from moving during setup.
-		
-		
-		
-		//Awake is always called before any Start functions
-		void Awake()
+
+        public BoardManager GetBoardScript() { return boardScript; }
+
+        //Awake is always called before any Start functions
+        void Awake()
 		{
             //Check if instance already exists
             if (instance == null)
@@ -60,12 +60,6 @@ namespace Completed
 			//Get a reference to our image LevelImage by finding it by name.
 			levelImage = GameObject.Find("LevelImage");
 			
-			//Get a reference to our text LevelText's text component by finding it by name and calling GetComponent.
-			levelText = GameObject.Find("LevelText").GetComponent<Text>();
-			
-			//Set the text of levelText to the string "Day" and append the current level number.
-			levelText.text = "Day " + level;
-			
 			//Set levelImage to active blocking player's view of the game board during setup.
 			levelImage.SetActive(true);
 			
@@ -74,11 +68,10 @@ namespace Completed
 			
 			//Clear any Enemy objects in our List to prepare for next level.
 			enemies.Clear();
-			
-			//Call the SetupScene function of the BoardManager script, pass it current level number.
-			boardScript.SetupScene(level, columns, rows);
-			
-		}
+
+            //Call the SetupScene function of the BoardManager script, pass it current level number.
+            boardScript.SetupScene(level, columns, rows);
+        }
 		
 		
 		//Hides black image used between levels
@@ -89,7 +82,11 @@ namespace Completed
 			
 			//Set doingSetup to false allowing player to move again.
 			doingSetup = false;
-		}
+
+            //Show path from enemy to the base
+            //TODO: add functionality for more enemies to show their path one by one
+            PathfindingDebugStepVisual.Instance.ShowSnapshots();
+        }
 		
 		//Update is called every frame.
 		void Update()

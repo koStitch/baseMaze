@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Completed
 {
@@ -14,10 +15,11 @@ namespace Completed
 		private Animator animator;							//Variable of type Animator to store a reference to the enemy's Animator component.
 		private Transform target;							//Transform to attempt to move toward each turn.
 		private bool skipMove;								//Boolean to determine whether or not enemy should skip a turn or move this turn.
-		
-		
-		//Start overrides the virtual Start function of the base class.
-		protected override void Start ()
+        List<PathNode> path;                                //Path from enemy position to the target
+
+
+        //Start overrides the virtual Start function of the base class.
+        protected override void Start ()
 		{
 			//Register this enemy with our instance of GameManager by adding it to a list of Enemy objects. 
 			//This allows the GameManager to issue movement commands.
@@ -31,26 +33,27 @@ namespace Completed
 			
 			//Call the start function of our base class MovingObject.
 			base.Start ();
-		}
+
+            //Stash pathfinding into a local variable
+            var pathfinding = GameManager.instance.GetBoardScript().Pathfinding;
+
+            //Get X and Y coords for the target
+            pathfinding.GetGrid().GetXY(target.position, out int targetX, out int targetY);
+
+            //Get X and Y coords for the enemy
+            pathfinding.GetGrid().GetXY(transform.position, out int selfX, out int selfY);
+
+            //Find a path from enemy to the target
+            path = pathfinding.FindPath(selfX, selfY, targetX, targetY);
+        }
 		
 		
 		//Override the AttemptMove function of MovingObject to include functionality needed for Enemy to skip turns.
 		//See comments in MovingObject for more on how base AttemptMove function works.
 		protected override void AttemptMove <T> (int xDir, int yDir)
 		{
-			//Check if skipMove is true, if so set it to false and skip this turn.
-			if(skipMove)
-			{
-				skipMove = false;
-				return;
-				
-			}
-			
 			//Call the AttemptMove function from MovingObject.
 			base.AttemptMove <T> (xDir, yDir);
-			
-			//Now that Enemy has moved, set skipMove to true to skip next move.
-			skipMove = true;
 		}
 		
 		
@@ -61,20 +64,24 @@ namespace Completed
 			//These values allow us to choose between the cardinal directions: up, down, left and right.
 			int xDir = 0;
 			int yDir = 0;
-			
-			//If the difference in positions is approximately zero (Epsilon) do the following:
-			if(Mathf.Abs (target.position.x - transform.position.x) < float.Epsilon)
-				
-				//If the y coordinate of the target's (player) position is greater than the y coordinate of this enemy's position set y direction 1 (to move up). If not, set it to -1 (to move down).
-				yDir = target.position.y > transform.position.y ? 1 : -1;
-			
-			//If the difference in positions is not approximately zero (Epsilon) do the following:
-			else
-				//Check if target x position is greater than enemy's x position, if so set x direction to 1 (move right), if not set to -1 (move left).
-				xDir = target.position.x > transform.position.x ? 1 : -1;
-			
-			//Call the AttemptMove function and pass in the generic parameter Player, because Enemy is moving and expecting to potentially encounter a Player
-			AttemptMove <Player> (xDir, yDir);
+
+            //Calculate in witch direction should enemy move
+            var xMovement = (int)transform.position.x - path[1].x;
+            var yMovement = (int)transform.position.y - path[1].y;
+            if (xMovement == 1 || xMovement == -1)
+            {
+                xDir = -xMovement;
+            }
+            else if (yMovement == 1 || yMovement == -1)
+            {
+                yDir = -yMovement;
+            }
+            //Remove the path node we already moved to
+            //TODO: figure out a safer option for this
+            path.RemoveAt(1);
+
+            //Call the AttemptMove function and pass in the generic parameter Player, because Enemy is moving and expecting to potentially encounter a Player
+            AttemptMove <Player> (xDir, yDir);
 		}
 		
 		
