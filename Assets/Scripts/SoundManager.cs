@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Completed
 {
@@ -9,10 +8,9 @@ namespace Completed
 		public AudioSource musicSource;					//Drag a reference to the audio source which will play the music.
 		public static SoundManager instance = null;		//Allows other scripts to call functions from SoundManager.				
 		public float lowPitchRange = .95f;				//The lowest a sound effect will be randomly pitched.
-		public float highPitchRange = 1.05f;			//The highest a sound effect will be randomly pitched.
-		
-		
-		void Awake ()
+		public float highPitchRange = 1.05f;            //The highest a sound effect will be randomly pitched.
+
+        void Awake ()
 		{
 			//Check if there is already an instance of SoundManager
 			if (instance == null)
@@ -22,9 +20,6 @@ namespace Completed
 			else if (instance != this)
 				//Destroy this, this enforces our singleton pattern so there can only be one instance of SoundManager.
 				Destroy (gameObject);
-			
-			//Set SoundManager to DontDestroyOnLoad so that it won't be destroyed when reloading our scene.
-			DontDestroyOnLoad (gameObject);
 		}
 		
 		
@@ -57,5 +52,15 @@ namespace Completed
 			//Play the clip.
 			efxSource.Play();
 		}
-	}
+
+        public void ToggleMusicOnOff()
+        {
+            musicSource.enabled = !musicSource.enabled;
+        }
+
+        public void ToggleSoundsOnOff()
+        {
+            efxSource.enabled = !efxSource.enabled;
+        }
+    }
 }
