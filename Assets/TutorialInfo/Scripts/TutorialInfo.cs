@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 
 // Hi! This script presents the overlay info for our tutorial content, linking you back to the relevant page.
@@ -31,8 +30,14 @@ public class TutorialInfo : MonoBehaviour
     // we store user input in here for number of rows in level
     public Text rowsInputField;
 
+    // we store user input in here for min number of obstacles in level
+    public Text minObstaclesInputField;
 
-	void Awake()
+    // we store user input in here for max number of obstacles in level
+    public Text maxObstaclesInputField;
+
+
+    void Awake()
 	{
 		// have we already shown this once?
 		if(alreadyShownThisSession)
@@ -83,9 +88,10 @@ public class TutorialInfo : MonoBehaviour
 		overlay.SetActive (false);
 		mainListener.enabled = true;
 		Time.timeScale = 1f;
-        if (int.TryParse(columnsInputField.text, out int columns) && int.TryParse(rowsInputField.text, out int rows))
+        if (int.TryParse(columnsInputField.text, out int columns) && int.TryParse(rowsInputField.text, out int rows)
+            && int.TryParse(minObstaclesInputField.text, out int minObstacles) && int.TryParse(maxObstaclesInputField.text, out int maxObstacles))
         {
-            Completed.GameManager.instance.InitGame(columns, rows);
+            Completed.GameManager.instance.InitGame(columns, rows, minObstacles, maxObstacles);
         }
     }
 

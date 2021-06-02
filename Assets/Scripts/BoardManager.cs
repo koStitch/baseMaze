@@ -25,10 +25,6 @@ namespace Completed
 			}
 		}
 		
-		
-		private int columns; 										    //Number of columns in our game board.
-		private int rows;											    //Number of rows in our game board.
-		private Count wallCount = new Count (10, 20);				    //Lower and upper limit for our random number of walls per level.
 		private Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
 		public GameObject exit;											//Prefab to spawn for exit.
 		public GameObject[] floorTiles;									//Array of floor prefabs.
@@ -157,7 +153,7 @@ namespace Completed
 		
 		
 		//SetupScene initializes our level and calls the previous functions to lay out the game board
-		public void SetupScene (int level, int columns, int rows)
+		public void SetupScene (int level, int columns, int rows, int minObstacles, int maxObstacles)
 		{
 			//Creates the outer walls and floor.
 			BoardSetup (columns, rows);
@@ -166,7 +162,7 @@ namespace Completed
 			InitialiseList (columns, rows);
 			
 			//Instantiate a random number of wall tiles based on minimum and maximum, at randomized positions.
-			LayoutObjectAtRandom (wallTiles, wallCount.minimum, wallCount.maximum, true);
+			LayoutObjectAtRandom (wallTiles, minObstacles, maxObstacles, true);
 			
 			//Instantiate a random number of food tiles based on minimum and maximum, at randomized positions.
 			LayoutObjectAtRandom (foodTiles, foodCount.minimum, foodCount.maximum);

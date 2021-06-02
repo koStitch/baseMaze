@@ -52,7 +52,7 @@ namespace Completed
 		}
 		
 		//Initializes the game for each level.
-		public void InitGame(int columns, int rows)
+		public void InitGame(int columns, int rows, int minObstacles, int maxObstacles)
 		{
 			//While doingSetup is true the player can't move, prevent player from moving while title card is up.
 			doingSetup = true;
@@ -70,7 +70,7 @@ namespace Completed
 			enemies.Clear();
 
             //Call the SetupScene function of the BoardManager script, pass it current level number.
-            boardScript.SetupScene(level, columns, rows);
+            boardScript.SetupScene(level, columns, rows, minObstacles, maxObstacles);
         }
 		
 		
