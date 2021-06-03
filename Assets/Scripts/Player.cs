@@ -120,7 +120,7 @@ namespace Completed
 			Wall hitWall = component as Wall;
 			
 			//Call the DamageWall function of the Wall we are hitting.
-			hitWall.DamageWall (wallDamage);
+			hitWall.DamageObject (wallDamage);
 			
 			//Set the attack trigger of the player's animation controller in order to play the player's attack animation.
 			animator.SetTrigger ("playerChop");
@@ -130,18 +130,7 @@ namespace Completed
 		//OnTriggerEnter2D is sent when another object enters a trigger collider attached to this object (2D physics only).
 		private void OnTriggerEnter2D (Collider2D other)
 		{
-			//Check if the tag of the trigger collided with is Exit.
-			if(other.tag == "Exit")
-			{
-				//Invoke the Restart function to start the next level with a delay of restartLevelDelay (default 1 second).
-				Invoke ("Restart", restartLevelDelay);
-				
-				//Disable the player object since level is over.
-				enabled = false;
-			}
-			
-			//Check if the tag of the trigger collided with is Food.
-			else if(other.tag == "Food")
+            if(other.tag == "Food")
 			{
 				//Add pointsPerFood to the players current food total.
 				food += pointsPerFood;

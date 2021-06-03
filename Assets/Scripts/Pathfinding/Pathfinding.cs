@@ -137,6 +137,7 @@ public class Pathfinding
             currentNode = currentNode.cameFromNode;
         }
         path.Reverse();
+        path.RemoveAt(0);
         return path;
     }
 
