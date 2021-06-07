@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,6 +38,8 @@ public class TutorialInfo : MonoBehaviour
     // we store user input in here for max number of obstacles in level
     public Text maxObstaclesInputField;
 
+    // we store user choice from the drop down menu in here for type of pathfinding algorith that is going to be used in game
+    public Dropdown pathfindingAlgorithm;
 
     void Awake()
 	{
@@ -73,7 +77,13 @@ public class TutorialInfo : MonoBehaviour
 		Time.timeScale = 0f;
 		mainListener.enabled = false;
 		overlay.SetActive (true);
-	}
+        // create a list where we can store names for pathfinding algorithms
+        List<string> pathfindingNames = new List<string>();
+        // convert enum members to string and add them to the list
+        pathfindingNames.AddRange(Enum.GetNames(typeof(Pathfinding.Algorithm)));
+        // add those names to the drop down menu
+        pathfindingAlgorithm.AddOptions(pathfindingNames);
+    }
 
 	// open the stored URL for this content in a web browser
 	public void LaunchTutorial()
@@ -91,7 +101,7 @@ public class TutorialInfo : MonoBehaviour
         if (int.TryParse(columnsInputField.text, out int columns) && int.TryParse(rowsInputField.text, out int rows)
             && int.TryParse(minObstaclesInputField.text, out int minObstacles) && int.TryParse(maxObstaclesInputField.text, out int maxObstacles))
         {
-            Completed.GameManager.instance.InitGame(columns, rows, minObstacles, maxObstacles);
+            Completed.GameManager.instance.InitGame(columns, rows, minObstacles, maxObstacles, (Pathfinding.Algorithm)pathfindingAlgorithm.value);
         }
     }
 

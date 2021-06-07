@@ -11,6 +11,12 @@ public class Pathfinding
     private List<PathNode> openList;
     private List<PathNode> closedList;
 
+    public enum Algorithm
+    {
+        AStar,
+        Dijkstra
+    }
+
     public Pathfinding(int width, int height)
     {
         Instance = this;
@@ -22,7 +28,7 @@ public class Pathfinding
         return grid;
     }
 
-    public List<PathNode> FindPath(int startX, int startY, int endX, int endY)
+    public List<PathNode> FindPath(int startX, int startY, int endX, int endY, Algorithm algorithm)
     {
         PathNode startNode = grid.GetGridObject(startX, startY);
         PathNode endNode = grid.GetGridObject(endX, endY);
@@ -56,7 +62,19 @@ public class Pathfinding
 
         while (openList.Count > 0)
         {
-            PathNode currentNode = GetLowestFCostNode(openList);
+            PathNode currentNode = null;
+            switch (algorithm)
+            {
+                case Algorithm.AStar:
+                    currentNode = GetLowestFCostNode(openList);
+                    break;
+                case Algorithm.Dijkstra:
+                    currentNode = openList[0];
+                    break;
+                default:
+                    break;
+            }
+
             if (currentNode == endNode)
             {
                 // Reached final node

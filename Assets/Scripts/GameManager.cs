@@ -24,8 +24,10 @@ namespace Completed
 		private List<Enemy> enemies;							//List of all Enemy units, used to issue them move commands.
 		private bool enemiesMoving;								//Boolean to check if enemies are moving.
 		private bool doingSetup = true;							//Boolean to check if we're setting up board, prevent Player from moving during setup.
+        Pathfinding.Algorithm pathfindingAlgorithm;             //Enum value for the pathfinding algorithm used in game.
 
         public BoardManager GetBoardScript() { return boardScript; }
+        public Pathfinding.Algorithm GetPathfindingAlgorithm() { return pathfindingAlgorithm; }
 
         //Awake is always called before any Start functions
         void Awake()
@@ -53,10 +55,12 @@ namespace Completed
 		}
 		
 		//Initializes the game for each level.
-		public void InitGame(int columns, int rows, int minObstacles, int maxObstacles)
+		public void InitGame(int columns, int rows, int minObstacles, int maxObstacles, Pathfinding.Algorithm algorithm)
 		{
 			//While doingSetup is true the player can't move, prevent player from moving while title card is up.
 			doingSetup = true;
+
+            pathfindingAlgorithm = algorithm;
 			
 			//Get a reference to our image LevelImage by finding it by name.
 			levelImage = GameObject.Find("LevelImage");
