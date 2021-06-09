@@ -112,6 +112,13 @@ namespace Completed
 			//Add Enemy to List enemies.
 			enemies.Add(script);
 		}
+
+        //Call this to remove the passed in Enemy from the List of Enemy objects.
+        public void RemoveEnemyFromTheList(Enemy enemy)
+        {
+            //Remove Enemy from the List enemies.
+            enemies.Remove(enemy);
+        }
 		
 		
 		//GameOver is called when the player reaches 0 food points

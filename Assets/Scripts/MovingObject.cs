@@ -96,11 +96,11 @@ namespace Completed
 			//The object is no longer moving.
 			isMoving = false;
 		}
-		
-		
-		//The virtual keyword means AttemptMove can be overridden by inheriting classes using the override keyword.
-		//AttemptMove takes a generic parameter T to specify the type of component we expect our unit to interact with if blocked (Player for Enemies, Wall for Player).
-		protected virtual void AttemptMove <T> (int xDir, int yDir)
+
+
+        //The virtual keyword means AttemptMove can be overridden by inheriting classes using the override keyword.
+        //AttemptMove takes a generic parameter T to specify the type of component we expect our unit to interact with if blocked (Enemies for Player).
+        protected virtual void AttemptMove <T> (int xDir, int yDir)
 			where T : Component
 		{
 			//Hit will store whatever our linecast hits when Move is called.
@@ -123,11 +123,43 @@ namespace Completed
 				//Call the OnCantMove function and pass it hitComponent as a parameter.
 				OnCantMove (hitComponent);
 		}
-		
-		
-		//The abstract modifier indicates that the thing being modified has a missing or incomplete implementation.
-		//OnCantMove will be overriden by functions in the inheriting classes.
-		protected abstract void OnCantMove <T> (T component)
-			where T : Component;
-	}
+
+        //We overload AttemptMove function with 2 generic parameters T and U in case some moving object expects to interact with 2 objects
+        protected virtual void AttemptMove<T, U>(int xDir, int yDir)
+            where T : Component
+            where U : Component
+        {
+            //Hit will store whatever our linecast hits when Move is called.
+            RaycastHit2D hit;
+
+            //Set canMove to true if Move was successful, false if failed.
+            bool canMove = Move(xDir, yDir, out hit);
+
+            //Check if nothing was hit by linecast
+            if (hit.transform == null)
+                //If nothing was hit, return and don't execute further code.
+                return;
+
+            //Get a component reference to the component of type T attached to the object that was hit
+            T hitComponent = hit.transform.GetComponent<T>();
+
+            U hitComponentTwo = hit.transform.GetComponent<U>();
+
+            //If canMove is false and hitComponent or hitComponentTwo is not equal to null, meaning MovingObject is blocked and has hit something it can interact with.
+            if (!canMove && (hitComponent != null || hitComponentTwo != null))
+
+                //Call the OnCantMove function and pass it hitComponent as a parameter.
+                OnCantMove(hitComponent, hitComponentTwo);
+        }
+
+        //OnCantMove will be overriden by functions in the inheriting classes.
+        protected virtual void OnCantMove<T>(T component)
+            where T : Component
+        { }
+
+        protected virtual void OnCantMove<T, U>(T component, U componentTwo)
+         where T : Component
+         where U : Component
+        { }
+    }
 }
