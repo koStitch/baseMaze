@@ -46,9 +46,6 @@ namespace Completed
 
             //Find a path from enemy to the target
             path = pathfinding.FindPath(selfX, selfY, targetX, targetY, this);
-
-            //Show pathfinding debug visualisation
-            pathfindingDebugStepVisual.ShowSnapshots();
         }
 		
 		

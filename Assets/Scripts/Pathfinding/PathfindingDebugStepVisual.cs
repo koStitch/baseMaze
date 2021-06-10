@@ -32,6 +32,11 @@ public class PathfindingDebugStepVisual : MonoBehaviour
         }
     }
 
+    public bool IsShowingSnapshots()
+    {
+        return autoShowSnapshots;
+    }
+
     public void ShowSnapshots()
     {
         autoShowSnapshots = true;

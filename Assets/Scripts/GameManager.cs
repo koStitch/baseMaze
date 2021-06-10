@@ -14,7 +14,7 @@ namespace Completed
 		public int playerFoodPoints = 100;						//Starting value for Player food points.
         public int playersBaseHp = 20;                          //Starting value for Players base health points.
         public static GameManager instance = null;				//Static instance of GameManager which allows it to be accessed by any other script.
-		[HideInInspector] public bool playersTurn = true;		//Boolean to check if it's players turn, hidden in inspector but public.
+		[HideInInspector] public bool playersTurn = false;		//Boolean to check if it's players turn, hidden in inspector but public.
 		
 		
 		private Text levelText;									//Text to display current level number.
@@ -86,9 +86,9 @@ namespace Completed
 		{
 			//Disable the levelImage gameObject.
 			levelImage.SetActive(false);
-			
-			//Set doingSetup to false allowing player to move again.
-			doingSetup = false;
+
+            //Start showing path from enemies to the base
+            StartCoroutine(ShowEnemiesPath());
         }
 		
 		//Update is called every frame.
@@ -163,6 +163,25 @@ namespace Completed
 			//Enemies are done moving, set enemiesMoving to false.
 			enemiesMoving = false;
 		}
-	}
+
+        IEnumerator ShowEnemiesPath()
+        {
+            //Loop trough every enemy on the map
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                //Show path from enemy to the base for enemies one by one
+                enemies[i].pathfindingDebugStepVisual.ShowSnapshots();
+                //Wait for one enemy to finsih showing the path before showing it for the next one
+                while (enemies[i].pathfindingDebugStepVisual.IsShowingSnapshots())
+                {
+                    yield return null;
+                }
+            }
+
+            //Set doingSetup to false allowing player to move again when all enemies are done showing their paths
+            doingSetup = false;
+            playersTurn = true;
+        }
+    }
 }
 
