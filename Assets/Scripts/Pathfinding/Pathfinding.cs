@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Pathfinding
@@ -28,7 +29,7 @@ public class Pathfinding
         return grid;
     }
 
-    public List<PathNode> FindPath(int startX, int startY, int endX, int endY, Algorithm algorithm)
+    public List<PathNode> FindPath(int startX, int startY, int endX, int endY)
     {
         PathNode startNode = grid.GetGridObject(startX, startY);
         PathNode endNode = grid.GetGridObject(endX, endY);
@@ -59,6 +60,9 @@ public class Pathfinding
 
         PathfindingDebugStepVisual.Instance.ClearSnapshots();
         PathfindingDebugStepVisual.Instance.TakeSnapshot(grid, startNode, openList, closedList);
+        //Choose one pathfinding algorithm at random that will be used from the list of available algorithms
+        var choosenRandomAlgorithm = UnityEngine.Random.Range(0, Enum.GetNames(typeof(Algorithm)).Length);
+        Algorithm algorithm = (Algorithm)choosenRandomAlgorithm;
 
         while (openList.Count > 0)
         {

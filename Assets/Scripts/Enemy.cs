@@ -45,7 +45,7 @@ namespace Completed
             pathfinding.GetGrid().GetXY(transform.position, out int selfX, out int selfY);
 
             //Find a path from enemy to the target
-            path = pathfinding.FindPath(selfX, selfY, targetX, targetY, GameManager.instance.GetPathfindingAlgorithm());
+            path = pathfinding.FindPath(selfX, selfY, targetX, targetY);
         }
 		
 		
