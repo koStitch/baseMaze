@@ -77,13 +77,13 @@ namespace Completed
 			{
 				//Call AttemptMove passing in the generic parameter Wall, since that is what Player may interact with if they encounter one (by attacking it)
 				//Pass in horizontal and vertical as parameters to specify the direction to move Player in.
-				AttemptMove<Enemy> (horizontal, vertical);
+				AttemptMove<Enemy, Wall> (horizontal, vertical);
 			}
 		}
 		
 		//AttemptMove overrides the AttemptMove function in the base class MovingObject
 		//AttemptMove takes a generic parameter T which for Player will be of the type Wall, it also takes integers for x and y direction to move in.
-		protected override void AttemptMove <T> (int xDir, int yDir)
+		protected override void AttemptMove <T, U> (int xDir, int yDir)
 		{
 			//Every time player moves, subtract from food points total.
 			//food--;
@@ -92,7 +92,7 @@ namespace Completed
 			foodText.text = "Food: " + food;
 			
 			//Call the AttemptMove method of the base class, passing in the component T (in this case Wall) and x and y direction to move.
-			base.AttemptMove <T> (xDir, yDir);
+			base.AttemptMove <T, U> (xDir, yDir);
 			
 			//Hit allows us to reference the result of the Linecast done in Move.
 			RaycastHit2D hit;
@@ -114,13 +114,24 @@ namespace Completed
 		
 		//OnCantMove overrides the abstract function OnCantMove in MovingObject.
 		//It takes a generic parameter T which in the case of Player is a Wall which the player can attack and destroy.
-		protected override void OnCantMove <T> (T component)
+		protected override void OnCantMove <T, U> (T component, U componentTwo)
 		{
             //Set hitEnemy to equal the component passed in as a parameter.
             Enemy hitEnemy = component as Enemy;
 
-            //Call the DamageWall function of the Wall we are hitting.
-            hitEnemy.DamageEnemy(enemyDamage);
+            Wall hitWall = componentTwo as Wall;
+
+            if (hitEnemy)
+            {
+                //Call the DamageEnemy function of the Enemy we are hitting.
+                hitEnemy.DamageEnemy(enemyDamage);
+            }
+
+            if (hitWall)
+            {
+                //Call the DamageWall function of the Wall we are hitting.
+                hitWall.DamageObject(enemyDamage);
+            }
 			
 			//Set the attack trigger of the player's animation controller in order to play the player's attack animation.
 			animator.SetTrigger ("playerChop");
