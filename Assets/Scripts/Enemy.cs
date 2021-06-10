@@ -109,8 +109,11 @@ namespace Completed
                 canMove = !hitBase;
             }
 
-            // If the player is hit then enemy can't move at the moment
-            canMove = !hitPlayer;
+            if (hitPlayer)
+            {
+                // If the player is hit then enemy can't move at the moment
+                canMove = !hitPlayer;
+            }
 
             //Set the attack trigger of animator to trigger Enemy attack animation.
             animator.SetTrigger ("enemyAttack");
