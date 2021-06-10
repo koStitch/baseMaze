@@ -5,15 +5,12 @@ using Utils;
 
 public class PathfindingDebugStepVisual : MonoBehaviour
 {
-    public static PathfindingDebugStepVisual Instance { get; private set; }
-
     private List<GridSnapshotAction> gridSnapshotActionList;
     private bool autoShowSnapshots;
     private float autoShowSnapshotsTimer;
 
     private void Awake()
     {
-        Instance = this;
         gridSnapshotActionList = new List<GridSnapshotAction>();
     }
 

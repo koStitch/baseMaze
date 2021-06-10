@@ -3,21 +3,24 @@ using System.Collections;
 
 namespace Completed
 {
-	//The abstract keyword enables you to create classes and class members that are incomplete and must be implemented in a derived class.
-	public abstract class MovingObject : MonoBehaviour
+    //The abstract keyword enables you to create classes and class members that are incomplete and must be implemented in a derived class.
+    [RequireComponent(typeof(PathfindingDebugStepVisual))]
+    public abstract class MovingObject : MonoBehaviour
 	{
 		public float moveTime = 0.1f;			//Time it will take object to move, in seconds.
-		public LayerMask blockingLayer;			//Layer on which collision will be checked.
-		
-		
-		private BoxCollider2D boxCollider; 		//The BoxCollider2D component attached to this object.
+		public LayerMask blockingLayer;         //Layer on which collision will be checked.
+        [HideInInspector]
+        public PathfindingDebugStepVisual pathfindingDebugStepVisual;
+
+
+        private BoxCollider2D boxCollider; 		//The BoxCollider2D component attached to this object.
 		private Rigidbody2D rb2D;				//The Rigidbody2D component attached to this object.
 		private float inverseMoveTime;			//Used to make movement more efficient.
 		private bool isMoving;					//Is the object currently moving.
-		
-		
-		//Protected, virtual functions can be overridden by inheriting classes.
-		protected virtual void Start ()
+
+
+        //Protected, virtual functions can be overridden by inheriting classes.
+        protected virtual void Start ()
 		{
 			//Get a component reference to this object's BoxCollider2D
 			boxCollider = GetComponent <BoxCollider2D> ();
@@ -27,7 +30,9 @@ namespace Completed
 			
 			//By storing the reciprocal of the move time we can use it by multiplying instead of dividing, this is more efficient.
 			inverseMoveTime = 1f / moveTime;
-		}
+
+            pathfindingDebugStepVisual = GetComponent<PathfindingDebugStepVisual>();
+        }
 		
 		
 		//Move returns true if it is able to move and false if not. 

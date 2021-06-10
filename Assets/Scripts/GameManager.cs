@@ -89,10 +89,6 @@ namespace Completed
 			
 			//Set doingSetup to false allowing player to move again.
 			doingSetup = false;
-
-            //Show path from enemy to the base
-            //TODO: add functionality for more enemies to show their path one by one
-            PathfindingDebugStepVisual.Instance.ShowSnapshots();
         }
 		
 		//Update is called every frame.

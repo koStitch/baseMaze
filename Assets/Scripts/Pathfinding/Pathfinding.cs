@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Completed;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,7 +30,7 @@ public class Pathfinding
         return grid;
     }
 
-    public List<PathNode> FindPath(int startX, int startY, int endX, int endY)
+    public List<PathNode> FindPath(int startX, int startY, int endX, int endY, MovingObject movingObject)
     {
         PathNode startNode = grid.GetGridObject(startX, startY);
         PathNode endNode = grid.GetGridObject(endX, endY);
@@ -58,8 +59,8 @@ public class Pathfinding
         startNode.hCost = CalculateDistanceCost(startNode, endNode);
         startNode.CalculateFCost();
 
-        PathfindingDebugStepVisual.Instance.ClearSnapshots();
-        PathfindingDebugStepVisual.Instance.TakeSnapshot(grid, startNode, openList, closedList);
+        movingObject.pathfindingDebugStepVisual.ClearSnapshots();
+        movingObject.pathfindingDebugStepVisual.TakeSnapshot(grid, startNode, openList, closedList);
         //Choose one pathfinding algorithm at random that will be used from the list of available algorithms
         var choosenRandomAlgorithm = UnityEngine.Random.Range(0, Enum.GetNames(typeof(Algorithm)).Length);
         Algorithm algorithm = (Algorithm)choosenRandomAlgorithm;
@@ -82,8 +83,8 @@ public class Pathfinding
             if (currentNode == endNode)
             {
                 // Reached final node
-                PathfindingDebugStepVisual.Instance.TakeSnapshot(grid, currentNode, openList, closedList);
-                PathfindingDebugStepVisual.Instance.TakeSnapshotFinalPath(grid, CalculatePath(endNode));
+                movingObject.pathfindingDebugStepVisual.TakeSnapshot(grid, currentNode, openList, closedList);
+                movingObject.pathfindingDebugStepVisual.TakeSnapshotFinalPath(grid, CalculatePath(endNode));
                 return CalculatePath(endNode);
             }
 
@@ -113,7 +114,7 @@ public class Pathfinding
                     }
                 }
 
-                PathfindingDebugStepVisual.Instance.TakeSnapshot(grid, currentNode, openList, closedList);
+                movingObject.pathfindingDebugStepVisual.TakeSnapshot(grid, currentNode, openList, closedList);
             }
         }
 
