@@ -61,6 +61,8 @@ namespace Completed
         //MoveEnemy is called by the GameManger each turn to tell each Enemy to try to move towards the player.
         public void MoveEnemy()
         {
+            //On start of the movement we first assume enemy can move
+            canMove = true;
             //Declare variables for X and Y axis move directions, these range from -1 to 1.
             //These values allow us to choose between the cardinal directions: up, down, left and right.
             int xDir = 0;
@@ -79,7 +81,7 @@ namespace Completed
             }
 
             //Call the AttemptMove function and pass in the generic parameters PlayersBase and Player, because Enemy is moving and expecting to potentially encounter one of the two
-            AttemptMove<PlayersBase, Player>(xDir, yDir);
+            AttemptMove<PlayersBase, MovingObject>(xDir, yDir);
 
             //Remove the path node we already moved to
             //Check if enemy movement is not restricted by something
@@ -95,24 +97,27 @@ namespace Completed
 		//and takes a generic parameter T which we use to pass in the component we expect to encounter, in this case Player
 		protected override void OnCantMove <T, U> (T component, U componentTwo)
 		{
+            //Set canMove to false, since this function was called it is clear that we can't move
+            canMove = false;
             //Declare hitBase and set it to equal the encountered component.
             PlayersBase hitBase = component as PlayersBase;
 
             //Declare hitPlayer and set it to equal the encountered component.
-            Player hitPlayer = componentTwo as Player;
+            MovingObject hitMovingObject = componentTwo as MovingObject;
+
+            //Check if the moving object is player
+            var hitPlayer = hitMovingObject as Player;
 
             //Call the DamageObject function of base class passing it baseDamage, the amount of hitpoints to be subtracted.
             if (hitBase)
             {
                 hitBase.DamageObject(baseDamage);
-                //If enemy is in front of the player's base it can't move anymore
-                canMove = !hitBase;
             }
-
-            if (hitPlayer)
+            
+            //If the moving object is not player nor player's base then we stop with function execution here
+            if (!hitPlayer && !hitBase)
             {
-                // If the player is hit then enemy can't move at the moment
-                canMove = !hitPlayer;
+                return;
             }
 
             //Set the attack trigger of animator to trigger Enemy attack animation.
