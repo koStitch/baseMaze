@@ -84,19 +84,23 @@ public class PathfindingDebugStepVisual : MonoBehaviour
 
                     visualNode.gameObject.SetActive(true);
 
-                    Color backgroundColor = UtilsClass.GetColorFromString("636363");
+                    Color backgroundColor = Color.white;
 
                     if (isInClosedList)
                     {
                         backgroundColor = new Color(1, 0, 0);
                     }
-                    if (isInOpenList)
+                    else if (isInOpenList)
                     {
                         backgroundColor = UtilsClass.GetColorFromString("009AFF");
                     }
-                    if (isCurrent)
+                    else if (isCurrent)
                     {
                         backgroundColor = new Color(0, 1, 0);
+                    }
+                    else
+                    {
+                        return;
                     }
 
                     visualNode.GetComponent<SpriteRenderer>().color = backgroundColor;
