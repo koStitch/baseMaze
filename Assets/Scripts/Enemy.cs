@@ -84,7 +84,7 @@ namespace Completed
             //Remove the path node we already moved to
             //Check if enemy movement is not restricted by something
             //TODO: figure out a safer option for this
-            if (canMove)
+            if (canMove && path.Count > 1)
             {
                 path.RemoveAt(0);
             }
