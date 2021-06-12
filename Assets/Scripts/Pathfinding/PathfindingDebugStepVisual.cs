@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
+using GM = Completed.GameManager;
 
 public class PathfindingDebugStepVisual : MonoBehaviour
 {
@@ -40,6 +41,7 @@ public class PathfindingDebugStepVisual : MonoBehaviour
     public void ShowSnapshots()
     {
         autoShowSnapshots = true;
+        GM.instance.pathfindingDebugCounter++;
     }
 
     private void ShowNextSnapshot()
@@ -78,7 +80,9 @@ public class PathfindingDebugStepVisual : MonoBehaviour
 
                 gridSnapshotAction.AddAction(() =>
                 {
-                    Transform visualNode = Completed.GameManager.instance.GetBoardScript().VisualNodeArray[tmpX, tmpY];
+                    Transform visualNode = GM.instance.GetBoardScript().VisualNodesList[GM.instance.pathfindingDebugCounter][tmpX, tmpY];
+
+                    visualNode.gameObject.SetActive(true);
 
                     Color backgroundColor = UtilsClass.GetColorFromString("636363");
 
@@ -106,6 +110,7 @@ public class PathfindingDebugStepVisual : MonoBehaviour
     public void TakeSnapshotFinalPath(Grid<PathNode> grid, List<PathNode> path)
     {
         GridSnapshotAction gridSnapshotAction = new GridSnapshotAction();
+        Color backgroundColor = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f, 0.3f, 0.3f);
 
         for (int x = 0; x < grid.GetWidth(); x++)
         {
@@ -122,17 +127,17 @@ public class PathfindingDebugStepVisual : MonoBehaviour
 
                 gridSnapshotAction.AddAction(() =>
                 {
-                    Transform visualNode = Completed.GameManager.instance.GetBoardScript().VisualNodeArray[tmpX, tmpY];
-
-                    Color backgroundColor;
+                    Transform visualNode = GM.instance.GetBoardScript().VisualNodesList[GM.instance.pathfindingDebugCounter][tmpX, tmpY];
 
                     if (isInPath)
                     {
-                        backgroundColor = new Color(0, 1, 0);
+                        var finalNodeHolderName = "FinalNodeHolder" + GM.instance.pathfindingDebugCounter.ToString();
+                        var finalNodeHolder = GameObject.Find(finalNodeHolderName).transform;
+                        visualNode.transform.SetParent(finalNodeHolder);
                     }
                     else
                     {
-                        backgroundColor = UtilsClass.GetColorFromString("636363");
+                        visualNode.gameObject.SetActive(false);
                     }
 
                     visualNode.GetComponent<SpriteRenderer>().color = backgroundColor;

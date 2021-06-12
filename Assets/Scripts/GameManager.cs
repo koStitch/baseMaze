@@ -14,10 +14,12 @@ namespace Completed
 		public int playerFoodPoints = 100;						//Starting value for Player food points.
         public int playersBaseHp = 20;                          //Starting value for Players base health points.
         public static GameManager instance = null;				//Static instance of GameManager which allows it to be accessed by any other script.
-		[HideInInspector] public bool playersTurn = false;		//Boolean to check if it's players turn, hidden in inspector but public.
-		
-		
-		private Text levelText;									//Text to display current level number.
+		[HideInInspector]
+        public bool playersTurn = false;                        //Boolean to check if it's players turn, hidden in inspector but public.
+        [HideInInspector]
+        public int pathfindingDebugCounter = -1;                //Counts how many times did we show debug pathfinding visualisation (1 per enemy)
+
+        private Text levelText;									//Text to display current level number.
 		private GameObject levelImage;							//Image to block out level as levels are being set up, background for levelText.
 		private BoardManager boardScript;						//Store a reference to our BoardManager which will set up the level.
 		private int level = 2;									//Current level number, expressed in game as "Day 1".
@@ -84,8 +86,15 @@ namespace Completed
 		//Hides black image used between levels
 		void HideLevelImage()
 		{
-			//Disable the levelImage gameObject.
-			levelImage.SetActive(false);
+            //Create FinalNodeHolder game object for each enemy
+            //These holders will hold the nodes that represent final path from enemy to the base
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                new GameObject("FinalNodeHolder" + i.ToString());
+            }
+
+            //Disable the levelImage gameObject.
+            levelImage.SetActive(false);
 
             //Start showing path from enemies to the base
             StartCoroutine(ShowEnemiesPath());

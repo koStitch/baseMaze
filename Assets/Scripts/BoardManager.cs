@@ -27,6 +27,7 @@ namespace Completed
 		
 		private Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
 		public GameObject playersBase;											//Prefab to spawn for exit.
+        public GameObject pathfindingDebugNode;
 		public GameObject[] floorTiles;									//Array of floor prefabs.
 		public GameObject[] wallTiles;									//Array of wall prefabs.
 		public GameObject[] foodTiles;									//Array of food prefabs.
@@ -37,9 +38,10 @@ namespace Completed
 		private List <Vector3> gridPositions = new List <Vector3> ();   //A list of possible locations to place tiles.
         private Pathfinding pathfinding;                                //Reference to our pathfinding class witch will handle pathfinding algorithms
         private Transform[,] visualNodeArray;                           //Array containing all grid nodes
+        private List<Transform[,]> visualNodesList = new List<Transform[,]>();
 
         public Pathfinding Pathfinding => pathfinding;                  //Pathfinding getter
-        public Transform[,] VisualNodeArray => visualNodeArray;         //Node array getter
+        public List<Transform[,]> VisualNodesList => visualNodesList;   //Node list getter
 
         //Clears our list gridPositions and prepares it to generate a new board.
         void InitialiseList (int columns, int rows)
@@ -98,7 +100,7 @@ namespace Completed
                     //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
                     visualNode.transform.SetParent(boardHolder);
 
-                    //Add ti node array only if the nodes position is inside of the playfield
+                    //Add node to array only if the nodes position is inside of the playfield
                     if (!boardEdge)
                     {
                         visualNodeArray[x, y] = visualNode;
@@ -175,6 +177,41 @@ namespace Completed
 			
 			//Instantiate the players base tile in the down right hand corner of our game board
 			Instantiate (playersBase, new Vector3 (0, 0, 0f), Quaternion.identity);
-		}
+
+            FillPathfindingDebugNodes(enemyCount);
+        }
+
+        private void FillPathfindingDebugNodes(int enemyCount)
+        {
+            //Get width and height from visualNodeArray that represents all nodes positioned inside of the playfield
+            int width = visualNodeArray.GetLength(0);
+            int height = visualNodeArray.GetLength(1);
+
+            for (int i = 0; i < enemyCount; i++)
+            {
+                //Instantiate NodeHolder that will hold all of the debug nodes
+                var nodeHolder = new GameObject("NodeHolder" + i.ToString()).transform;
+                //Declare visual node multidimensional array with width and height that we declared earlier
+                Transform[,] visualNodes = new Transform[width, height];
+                //Go trough entire visualNodeArray
+                for (int j = 0; j < width; j++)
+                {
+                    for (int z = 0; z < height; z++)
+                    {
+                        //Instantiate the Transform instance using the pathfindingDebugNode prefab at the Vector3 corresponding to visualNodeArray position
+                        Transform node = Instantiate(pathfindingDebugNode.transform, new Vector3(visualNodeArray[j, z].position.x, visualNodeArray[j, z].position.y, 0f), Quaternion.identity);
+                        //Set the parent of our newly instantiated object instance to nodeHolder, this is just organizational to avoid cluttering hierarchy
+                        node.transform.SetParent(nodeHolder);
+                        //Set all of the nodes inactive because we do not need to see them now, we will turn them on later
+                        node.gameObject.SetActive(false);
+                        //Add instantiated node to the multidimensional array we created earlier
+                        visualNodes[j, z] = node;
+                    }
+                }
+
+                //Add entire array to the list
+                visualNodesList.Add(visualNodes);
+            }
+        }
 	}
 }
