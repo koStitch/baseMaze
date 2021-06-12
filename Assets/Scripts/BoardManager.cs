@@ -39,6 +39,7 @@ namespace Completed
         private Pathfinding pathfinding;                                //Reference to our pathfinding class witch will handle pathfinding algorithms
         private Transform[,] visualNodeArray;                           //Array containing all grid nodes
         private List<Transform[,]> visualNodesList = new List<Transform[,]>();
+        private List<GameObject> nodeHolders = new List<GameObject>();
 
         public Pathfinding Pathfinding => pathfinding;                  //Pathfinding getter
         public List<Transform[,]> VisualNodesList => visualNodesList;   //Node list getter
@@ -191,6 +192,8 @@ namespace Completed
             {
                 //Instantiate NodeHolder that will hold all of the debug nodes
                 var nodeHolder = new GameObject("NodeHolder" + i.ToString()).transform;
+                //Pool all the nodeHolders together for easier deletion
+                nodeHolders.Add(nodeHolder.gameObject);
                 //Declare visual node multidimensional array with width and height that we declared earlier
                 Transform[,] visualNodes = new Transform[width, height];
                 //Go trough entire visualNodeArray
@@ -211,6 +214,14 @@ namespace Completed
 
                 //Add entire array to the list
                 visualNodesList.Add(visualNodes);
+            }
+        }
+
+        public void DeleteNodeHolders()
+        {
+            for (int i = 0; i < nodeHolders.Count; i++)
+            {
+                Destroy(nodeHolders[i]);
             }
         }
 	}

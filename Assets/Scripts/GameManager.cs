@@ -190,6 +190,8 @@ namespace Completed
             //Set doingSetup to false allowing player to move again when all enemies are done showing their paths
             doingSetup = false;
             playersTurn = true;
+            //Delete all of the node holders because they do not contain the final path
+            boardScript.DeleteNodeHolders();
         }
     }
 }
