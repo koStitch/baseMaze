@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Completed
+namespace Gameplay
 {
 	//Enemy inherits from MovingObject, our base class for objects that can move, Player also inherits from this.
 	public class Enemy : MovingObject
@@ -15,16 +15,16 @@ namespace Completed
         private Animator animator;							//Variable of type Animator to store a reference to the enemy's Animator component.
 		private Transform target;							//Transform to attempt to move toward each turn.
 		private int skipMoveAmount;                         //Amount of moves enemy should skip
-        private List<PathNode> path;                        //Path from enemy position to the target
+        private List<Pathfinding.PathNode> path;                        //Path from enemy position to the target
         private bool canMove = true;                         //Is something preventing enemy from moving
 
         //Start overrides the virtual Start function of the base class.
         protected override void Start ()
 		{
-            GameEvents.instance.onFreezeEnemy += FreezeEnemy;
+            Managers.GameEvents.instance.onFreezeEnemy += FreezeEnemy;
             //Register this enemy with our instance of GameManager by adding it to a list of Enemy objects. 
             //This allows the GameManager to issue movement commands.
-            GameManager.instance.AddEnemyToList (this);
+            Managers.GameManager.instance.AddEnemyToList (this);
 			
 			//Get and store a reference to the attached Animator component.
 			animator = GetComponent<Animator> ();
@@ -36,7 +36,7 @@ namespace Completed
 			base.Start ();
 
             //Stash pathfinding into a local variable
-            var pathfinding = GameManager.instance.GetBoardScript().Pathfinding;
+            var pathfinding = Managers.GameManager.instance.GetBoardScript().Pathfinding;
 
             //Get X and Y coords for the target
             pathfinding.GetGrid().GetXY(target.position, out int targetX, out int targetY);
@@ -50,7 +50,7 @@ namespace Completed
 
         private void OnDestroy()
         {
-            GameEvents.instance.onFreezeEnemy -= FreezeEnemy;
+            Managers.GameEvents.instance.onFreezeEnemy -= FreezeEnemy;
         }
 
         //MoveEnemy is called by the GameManger each turn to tell each Enemy to try to move towards the player.
@@ -125,16 +125,16 @@ namespace Completed
 
             //Set the attack trigger of animator to trigger Enemy attack animation.
             animator.SetTrigger ("enemyAttack");
-			
-			//Call the RandomizeSfx function of SoundManager passing in the two audio clips to choose randomly between.
-			SoundManager.instance.RandomizeSfx (attackSound1, attackSound2);
+
+            //Call the RandomizeSfx function of SoundManager passing in the two audio clips to choose randomly between.
+            Managers.SoundManager.instance.RandomizeSfx (attackSound1, attackSound2);
 		}
 
         //DamageEnemy is called when someone attacks this enemy.
         public void DamageEnemy(int loss)
         {
             //Call the RandomizeSfx function of SoundManager to play one of two chop sounds.
-            SoundManager.instance.RandomizeSfx(attackSound1, attackSound2);
+            Managers.SoundManager.instance.RandomizeSfx(attackSound1, attackSound2);
 
             //Subtract loss from hit point total.
             hp -= loss;
@@ -143,7 +143,7 @@ namespace Completed
             if (hp <= 0)
             {
                 //Remove the enemy from the scene
-                GameManager.instance.RemoveEnemyFromTheList(this);
+                Managers.GameManager.instance.RemoveEnemyFromTheList(this);
                 gameObject.SetActive(false);
             }
         }

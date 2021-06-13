@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Completed
+namespace Gameplay
 {
 	//Player inherits from MovingObject, our base class for objects that can move, Enemy also inherits from this.
 	public class Player : MovingObject
@@ -26,7 +26,7 @@ namespace Completed
 		//Start overrides the Start function of MovingObject
 		protected override void Start ()
 		{
-            GameEvents.instance.onLevelEnd += LevelEnd;
+            Managers.GameEvents.instance.onLevelEnd += LevelEnd;
             //Get a component reference to the Player's animator component
             animator = GetComponent<Animator>();
 			
@@ -36,13 +36,13 @@ namespace Completed
 
         private void OnDestroy()
         {
-            GameEvents.instance.onLevelEnd -= LevelEnd;
+            Managers.GameEvents.instance.onLevelEnd -= LevelEnd;
         }
 
         private void Update()
         {
             //If it's not the player's turn, exit the function.
-            if (!GameManager.instance.playersTurn) return;
+            if (!Managers.GameManager.instance.playersTurn) return;
 
             int horizontal = 0;     //Used to store the horizontal move direction.
             int vertical = 0;       //Used to store the vertical move direction.
@@ -125,12 +125,12 @@ namespace Completed
 			//If Move returns true, meaning Player was able to move into an empty space.
 			if (Move (xDir, yDir, out hit)) 
 			{
-				//Call RandomizeSfx of SoundManager to play the move sound, passing in two audio clips to choose from.
-				SoundManager.instance.RandomizeSfx (moveSound1, moveSound2);
+                //Call RandomizeSfx of SoundManager to play the move sound, passing in two audio clips to choose from.
+                Managers.SoundManager.instance.RandomizeSfx (moveSound1, moveSound2);
 			}
-			
-			//Set the playersTurn boolean of GameManager to false now that players turn is over.
-			GameManager.instance.playersTurn = false;
+
+            //Set the playersTurn boolean of GameManager to false now that players turn is over.
+            Managers.GameManager.instance.playersTurn = false;
 		}
 		
 		
@@ -165,13 +165,13 @@ namespace Completed
             if(other.tag == "Food")
 			{
                 //Add pointsPerFood to the players base current hp total.
-                GameEvents.instance.PlayersBaseHealthChange(pointsPerFood);
+                Managers.GameEvents.instance.PlayersBaseHealthChange(pointsPerFood);
 
                 //Update foodText to represent current total and notify player that they gained points
-                GameEvents.instance.PlayersBaseHealthTextUpdate();
+                Managers.GameEvents.instance.PlayersBaseHealthTextUpdate();
 
                 //Call the RandomizeSfx function of SoundManager and pass in two eating sounds to choose between to play the eating sound effect.
-                SoundManager.instance.RandomizeSfx (eatSound1, eatSound2);
+                Managers.SoundManager.instance.RandomizeSfx (eatSound1, eatSound2);
 				
 				//Disable the food object the player collided with.
 				other.gameObject.SetActive (false);
@@ -179,10 +179,10 @@ namespace Completed
 			else if(other.tag == "Soda") //Check if the tag of the trigger collided with is Soda.
             {
                 //We freeze all enemies when we drink soda
-                GameEvents.instance.FreezeEnemy();
+                Managers.GameEvents.instance.FreezeEnemy();
 
-				//Call the RandomizeSfx function of SoundManager and pass in two drinking sounds to choose between to play the drinking sound effect.
-				SoundManager.instance.RandomizeSfx (drinkSound1, drinkSound2);
+                //Call the RandomizeSfx function of SoundManager and pass in two drinking sounds to choose between to play the drinking sound effect.
+                Managers.SoundManager.instance.RandomizeSfx (drinkSound1, drinkSound2);
 				
 				//Disable the soda object the player collided with.
 				other.gameObject.SetActive (false);

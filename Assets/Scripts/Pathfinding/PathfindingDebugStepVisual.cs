@@ -1,172 +1,175 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using GM = Completed.GameManager;
+using GM = Managers.GameManager;
 
-public class PathfindingDebugStepVisual : MonoBehaviour
+namespace Pathfinding
 {
-    private List<GridSnapshotAction> gridSnapshotActionList;
-    private bool autoShowSnapshots;
-    private float autoShowSnapshotsTimer;
-
-    private void Awake()
+    public class PathfindingDebugStepVisual : MonoBehaviour
     {
-        gridSnapshotActionList = new List<GridSnapshotAction>();
-    }
+        private List<GridSnapshotAction> gridSnapshotActionList;
+        private bool autoShowSnapshots;
+        private float autoShowSnapshotsTimer;
 
-    private void Update()
-    {
-        if (autoShowSnapshots)
+        private void Awake()
         {
-            float autoShowSnapshotsTimerMax = .05f;
-            autoShowSnapshotsTimer -= Time.deltaTime;
-            if (autoShowSnapshotsTimer <= 0f)
+            gridSnapshotActionList = new List<GridSnapshotAction>();
+        }
+
+        private void Update()
+        {
+            if (autoShowSnapshots)
             {
-                autoShowSnapshotsTimer += autoShowSnapshotsTimerMax;
-                ShowNextSnapshot();
-                if (gridSnapshotActionList.Count == 0)
+                float autoShowSnapshotsTimerMax = .05f;
+                autoShowSnapshotsTimer -= Time.deltaTime;
+                if (autoShowSnapshotsTimer <= 0f)
                 {
-                    autoShowSnapshots = false;
+                    autoShowSnapshotsTimer += autoShowSnapshotsTimerMax;
+                    ShowNextSnapshot();
+                    if (gridSnapshotActionList.Count == 0)
+                    {
+                        autoShowSnapshots = false;
+                    }
                 }
             }
         }
-    }
 
-    public bool IsShowingSnapshots()
-    {
-        return autoShowSnapshots;
-    }
-
-    public void ShowSnapshots()
-    {
-        autoShowSnapshots = true;
-        GM.instance.pathfindingDebugCounter++;
-    }
-
-    private void ShowNextSnapshot()
-    {
-        if (gridSnapshotActionList.Count > 0)
+        public bool IsShowingSnapshots()
         {
-            GridSnapshotAction gridSnapshotAction = gridSnapshotActionList[0];
-            gridSnapshotActionList.RemoveAt(0);
-            gridSnapshotAction.TriggerAction();
+            return autoShowSnapshots;
         }
-    }
 
-    public void ClearSnapshots()
-    {
-        gridSnapshotActionList.Clear();
-    }
-
-    public void TakeSnapshot(Grid<PathNode> grid, PathNode current, List<PathNode> openList, List<PathNode> closedList)
-    {
-        GridSnapshotAction gridSnapshotAction = new GridSnapshotAction();
-
-        for (int x = 0; x < grid.GetWidth(); x++)
+        public void ShowSnapshots()
         {
-            for (int y = 0; y < grid.GetHeight(); y++)
+            autoShowSnapshots = true;
+            GM.instance.pathfindingDebugCounter++;
+        }
+
+        private void ShowNextSnapshot()
+        {
+            if (gridSnapshotActionList.Count > 0)
             {
-                PathNode pathNode = grid.GetGridObject(x, y);
-
-                int gCost = pathNode.gCost;
-                int hCost = pathNode.hCost;
-                int fCost = pathNode.fCost;
-                bool isCurrent = pathNode == current;
-                bool isInOpenList = openList.Contains(pathNode);
-                bool isInClosedList = closedList.Contains(pathNode);
-                int tmpX = x;
-                int tmpY = y;
-
-                gridSnapshotAction.AddAction(() =>
-                {
-                    Transform visualNode = GM.instance.GetBoardScript().VisualNodesList[GM.instance.pathfindingDebugCounter][tmpX, tmpY];
-
-                    visualNode.gameObject.SetActive(true);
-
-                    Color backgroundColor = visualNode.GetComponent<SpriteRenderer>().color;
-
-                    if (isInClosedList)
-                    {
-                        backgroundColor = new Color(1, 0, 0);
-                    }
-
-                    if (isInOpenList)
-                    {
-                        backgroundColor = Color.grey;
-                    }
-
-                    if (isCurrent)
-                    {
-                        backgroundColor = new Color(0, 1, 0);
-                    }
-
-
-                    visualNode.GetComponent<SpriteRenderer>().color = backgroundColor;
-                });
+                GridSnapshotAction gridSnapshotAction = gridSnapshotActionList[0];
+                gridSnapshotActionList.RemoveAt(0);
+                gridSnapshotAction.TriggerAction();
             }
         }
 
-        gridSnapshotActionList.Add(gridSnapshotAction);
-    }
-
-    public void TakeSnapshotFinalPath(Grid<PathNode> grid, List<PathNode> path)
-    {
-        GridSnapshotAction gridSnapshotAction = new GridSnapshotAction();
-        Color backgroundColor = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f, 0.3f, 0.3f);
-
-        for (int x = 0; x < grid.GetWidth(); x++)
+        public void ClearSnapshots()
         {
-            for (int y = 0; y < grid.GetHeight(); y++)
+            gridSnapshotActionList.Clear();
+        }
+
+        public void TakeSnapshot(Grid<PathNode> grid, PathNode current, List<PathNode> openList, List<PathNode> closedList)
+        {
+            GridSnapshotAction gridSnapshotAction = new GridSnapshotAction();
+
+            for (int x = 0; x < grid.GetWidth(); x++)
             {
-                PathNode pathNode = grid.GetGridObject(x, y);
-
-                int gCost = pathNode.gCost;
-                int hCost = pathNode.hCost;
-                int fCost = pathNode.fCost;
-                bool isInPath = path.Contains(pathNode);
-                int tmpX = x;
-                int tmpY = y;
-
-                gridSnapshotAction.AddAction(() =>
+                for (int y = 0; y < grid.GetHeight(); y++)
                 {
-                    Transform visualNode = GM.instance.GetBoardScript().VisualNodesList[GM.instance.pathfindingDebugCounter][tmpX, tmpY];
+                    PathNode pathNode = grid.GetGridObject(x, y);
 
-                    if (isInPath)
-                    {
-                        var finalNodeHolderName = "FinalNodeHolder" + GM.instance.pathfindingDebugCounter.ToString();
-                        var finalNodeHolder = GameObject.Find(finalNodeHolderName).transform;
-                        visualNode.transform.SetParent(finalNodeHolder);
-                    }
-                    else
-                    {
-                        visualNode.gameObject.SetActive(false);
-                    }
+                    int gCost = pathNode.gCost;
+                    int hCost = pathNode.hCost;
+                    int fCost = pathNode.fCost;
+                    bool isCurrent = pathNode == current;
+                    bool isInOpenList = openList.Contains(pathNode);
+                    bool isInClosedList = closedList.Contains(pathNode);
+                    int tmpX = x;
+                    int tmpY = y;
 
-                    visualNode.GetComponent<SpriteRenderer>().color = backgroundColor;
-                });
+                    gridSnapshotAction.AddAction(() =>
+                    {
+                        Transform visualNode = GM.instance.GetBoardScript().VisualNodesList[GM.instance.pathfindingDebugCounter][tmpX, tmpY];
+
+                        visualNode.gameObject.SetActive(true);
+
+                        Color backgroundColor = visualNode.GetComponent<SpriteRenderer>().color;
+
+                        if (isInClosedList)
+                        {
+                            backgroundColor = new Color(1, 0, 0);
+                        }
+
+                        if (isInOpenList)
+                        {
+                            backgroundColor = Color.grey;
+                        }
+
+                        if (isCurrent)
+                        {
+                            backgroundColor = new Color(0, 1, 0);
+                        }
+
+
+                        visualNode.GetComponent<SpriteRenderer>().color = backgroundColor;
+                    });
+                }
             }
+
+            gridSnapshotActionList.Add(gridSnapshotAction);
         }
 
-        gridSnapshotActionList.Add(gridSnapshotAction);
-    }
-
-    private class GridSnapshotAction
-    {
-        private Action action;
-
-        public GridSnapshotAction()
+        public void TakeSnapshotFinalPath(Grid<PathNode> grid, List<PathNode> path)
         {
-            action = () => { };
+            GridSnapshotAction gridSnapshotAction = new GridSnapshotAction();
+            Color backgroundColor = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f, 0.3f, 0.3f);
+
+            for (int x = 0; x < grid.GetWidth(); x++)
+            {
+                for (int y = 0; y < grid.GetHeight(); y++)
+                {
+                    PathNode pathNode = grid.GetGridObject(x, y);
+
+                    int gCost = pathNode.gCost;
+                    int hCost = pathNode.hCost;
+                    int fCost = pathNode.fCost;
+                    bool isInPath = path.Contains(pathNode);
+                    int tmpX = x;
+                    int tmpY = y;
+
+                    gridSnapshotAction.AddAction(() =>
+                    {
+                        Transform visualNode = GM.instance.GetBoardScript().VisualNodesList[GM.instance.pathfindingDebugCounter][tmpX, tmpY];
+
+                        if (isInPath)
+                        {
+                            var finalNodeHolderName = "FinalNodeHolder" + GM.instance.pathfindingDebugCounter.ToString();
+                            var finalNodeHolder = GameObject.Find(finalNodeHolderName).transform;
+                            visualNode.transform.SetParent(finalNodeHolder);
+                        }
+                        else
+                        {
+                            visualNode.gameObject.SetActive(false);
+                        }
+
+                        visualNode.GetComponent<SpriteRenderer>().color = backgroundColor;
+                    });
+                }
+            }
+
+            gridSnapshotActionList.Add(gridSnapshotAction);
         }
 
-        public void AddAction(Action action)
+        private class GridSnapshotAction
         {
-            this.action += action;
-        }
+            private Action action;
 
-        public void TriggerAction()
-        {
-            action();
+            public GridSnapshotAction()
+            {
+                action = () => { };
+            }
+
+            public void AddAction(Action action)
+            {
+                this.action += action;
+            }
+
+            public void TriggerAction()
+            {
+                action();
+            }
         }
     }
 }

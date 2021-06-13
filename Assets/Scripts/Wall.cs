@@ -1,4 +1,4 @@
-﻿namespace Completed
+﻿namespace Gameplay
 {
     public class Wall : DestructibleObject
     {

@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic; 		//Allows us to use Lists.
 using Random = UnityEngine.Random; 		//Tells Random to use the Unity Engine random number generator.
 
-namespace Completed
-	
+namespace Managers	
 {
-	
 	public class BoardManager : MonoBehaviour
 	{
 		// Using Serializable allows us to embed a class with sub properties in the inspector.
@@ -36,12 +34,12 @@ namespace Completed
 		
 		private Transform boardHolder;									//A variable to store a reference to the transform of our Board object.
 		private List <Vector3> gridPositions = new List <Vector3> ();   //A list of possible locations to place tiles.
-        private Pathfinding pathfinding;                                //Reference to our pathfinding class witch will handle pathfinding algorithms
+        private Pathfinding.Pathfinding pathfinding;                                //Reference to our pathfinding class witch will handle pathfinding algorithms
         private Transform[,] visualNodeArray;                           //Array containing all grid nodes
         private List<Transform[,]> visualNodesList = new List<Transform[,]>();
         private List<GameObject> nodeHolders = new List<GameObject>();
 
-        public Pathfinding Pathfinding => pathfinding;                  //Pathfinding getter
+        public Pathfinding.Pathfinding Pathfinding => pathfinding;                  //Pathfinding getter
         public List<Transform[,]> VisualNodesList => visualNodesList;   //Node list getter
 
         //Clears our list gridPositions and prepares it to generate a new board.
@@ -62,12 +60,11 @@ namespace Completed
 			}
 		}
 
-
         //Sets up the outer walls and floor (background) of the game board.
         void BoardSetup(int columns, int rows)
         {
             //Create pathfinding object using number of columns and rows our level(grid) will have
-            pathfinding = new Pathfinding(columns, rows);
+            pathfinding = new Pathfinding.Pathfinding(columns, rows);
 
             //Instantiate Board and set boardHolder to its transform.
             boardHolder = new GameObject("Board").transform;
@@ -126,7 +123,6 @@ namespace Completed
 			return randomPosition;
 		}
 		
-		
 		//LayoutObjectAtRandom accepts an array of game objects to choose from along with a minimum and maximum range for the number of objects to create.
 		void LayoutObjectAtRandom (GameObject[] tileArray, int minimum, int maximum, bool isWall = false)
 		{
@@ -152,8 +148,7 @@ namespace Completed
                     pathfinding.GetNode(x, y).SetIsWalkable(!pathfinding.GetNode(x, y).isWalkable);
                 }
             }
-		}
-		
+		}	
 		
 		//SetupScene initializes our level and calls the previous functions to lay out the game board
 		public void SetupScene (int level, int columns, int rows, int minObstacles, int maxObstacles)

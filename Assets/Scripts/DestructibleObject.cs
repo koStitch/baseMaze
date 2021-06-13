@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using Managers;
 
-namespace Completed
+namespace Gameplay
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class DestructibleObject : MonoBehaviour

@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Completed
+namespace Gameplay
 {
     //The abstract keyword enables you to create classes and class members that are incomplete and must be implemented in a derived class.
-    [RequireComponent(typeof(PathfindingDebugStepVisual))]
+    [RequireComponent(typeof(Pathfinding.PathfindingDebugStepVisual))]
     public abstract class MovingObject : MonoBehaviour
 	{
 		public float moveTime = 0.1f;			//Time it will take object to move, in seconds.
 		public LayerMask blockingLayer;         //Layer on which collision will be checked.
         [HideInInspector]
-        public PathfindingDebugStepVisual pathfindingDebugStepVisual;
+        public Pathfinding.PathfindingDebugStepVisual pathfindingDebugStepVisual;
 
 
         private BoxCollider2D boxCollider; 		//The BoxCollider2D component attached to this object.
@@ -31,7 +31,7 @@ namespace Completed
 			//By storing the reciprocal of the move time we can use it by multiplying instead of dividing, this is more efficient.
 			inverseMoveTime = 1f / moveTime;
 
-            pathfindingDebugStepVisual = GetComponent<PathfindingDebugStepVisual>();
+            pathfindingDebugStepVisual = GetComponent<Pathfinding.PathfindingDebugStepVisual>();
         }
 		
 		
