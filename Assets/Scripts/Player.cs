@@ -173,6 +173,9 @@ namespace Completed
 			}	
 			else if(other.tag == "Soda") //Check if the tag of the trigger collided with is Soda.
             {
+                //We freeze all enemies when we drink soda
+                GameEvents.instance.FreezeEnemy();
+
 				//Call the RandomizeSfx function of SoundManager and pass in two drinking sounds to choose between to play the drinking sound effect.
 				SoundManager.instance.RandomizeSfx (drinkSound1, drinkSound2);
 				

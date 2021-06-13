@@ -6,25 +6,25 @@ namespace Completed
 	//Enemy inherits from MovingObject, our base class for objects that can move, Player also inherits from this.
 	public class Enemy : MovingObject
 	{
-		public int baseDamage; 							//The amount of food points to subtract from the player when attacking.
+		public int baseDamage; 							    //The amount of food points to subtract from the player when attacking.
 		public AudioClip attackSound1;						//First of two audio clips to play when attacking the player.
-		public AudioClip attackSound2;						//Second of two audio clips to play when attacking the player.
-		
-		
-		private Animator animator;							//Variable of type Animator to store a reference to the enemy's Animator component.
-		private Transform target;							//Transform to attempt to move toward each turn.
-		private bool skipMove;								//Boolean to determine whether or not enemy should skip a turn or move this turn.
-        List<PathNode> path;                                //Path from enemy position to the target
+		public AudioClip attackSound2;                      //Second of two audio clips to play when attacking the player.
         public int hp = 3;                                  //Enemy's health points
-        bool canMove = true;                                //Is something preventing enemy from moving
+        public int skipMoveIncrement = 5;                   //Amount of turns to skip is added
 
+        private Animator animator;							//Variable of type Animator to store a reference to the enemy's Animator component.
+		private Transform target;							//Transform to attempt to move toward each turn.
+		private int skipMoveAmount;                         //Amount of moves enemy should skip
+        private List<PathNode> path;                        //Path from enemy position to the target
+        private bool canMove = true;                         //Is something preventing enemy from moving
 
         //Start overrides the virtual Start function of the base class.
         protected override void Start ()
 		{
-			//Register this enemy with our instance of GameManager by adding it to a list of Enemy objects. 
-			//This allows the GameManager to issue movement commands.
-			GameManager.instance.AddEnemyToList (this);
+            GameEvents.instance.onFreezeEnemy += FreezeEnemy;
+            //Register this enemy with our instance of GameManager by adding it to a list of Enemy objects. 
+            //This allows the GameManager to issue movement commands.
+            GameManager.instance.AddEnemyToList (this);
 			
 			//Get and store a reference to the attached Animator component.
 			animator = GetComponent<Animator> ();
@@ -47,11 +47,15 @@ namespace Completed
             //Find a path from enemy to the target
             path = pathfinding.FindPath(selfX, selfY, targetX, targetY, this);
         }
-		
-		
-		//Override the AttemptMove function of MovingObject to include functionality needed for Enemy to skip turns.
-		//See comments in MovingObject for more on how base AttemptMove function works.
-		protected override void AttemptMove <T, E> (int xDir, int yDir)
+
+        private void OnDestroy()
+        {
+            GameEvents.instance.onFreezeEnemy -= FreezeEnemy;
+        }
+
+        //Override the AttemptMove function of MovingObject to include functionality needed for Enemy to skip turns.
+        //See comments in MovingObject for more on how base AttemptMove function works.
+        protected override void AttemptMove <T, E> (int xDir, int yDir)
 		{
 			//Call the AttemptMove function from MovingObject.
 			base.AttemptMove <T, E> (xDir, yDir);
@@ -61,6 +65,14 @@ namespace Completed
         //MoveEnemy is called by the GameManger each turn to tell each Enemy to try to move towards the player.
         public void MoveEnemy()
         {
+            //If skipMoveAmount is not 0 it means enemy should skip a turn
+            if (skipMoveAmount != 0)
+            {
+                //We skip one turn and decrease the amount of turns we should still skip
+                skipMoveAmount--;
+                return;
+            }
+
             //On start of the movement we first assume enemy can move
             canMove = true;
             //Declare variables for X and Y axis move directions, these range from -1 to 1.
@@ -143,6 +155,12 @@ namespace Completed
                 GameManager.instance.RemoveEnemyFromTheList(this);
                 gameObject.SetActive(false);
             }
+        }
+
+        //FreezeEnemy is called upon player taking soda power-up
+        public void FreezeEnemy()
+        {
+            skipMoveAmount += skipMoveIncrement;
         }
     }
 }

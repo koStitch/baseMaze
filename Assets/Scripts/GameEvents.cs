@@ -6,6 +6,7 @@ public class GameEvents : MonoBehaviour
     public static GameEvents instance;
     public event Action onPlayersBaseHealthTextUpdate;
     public event Action<int> onPlayersBaseHealthChange;
+    public event Action onFreezeEnemy;
 
     private void Awake()
     {
@@ -35,5 +36,11 @@ public class GameEvents : MonoBehaviour
     public void PlayersBaseHealthChange(int amount)
     {
         onPlayersBaseHealthChange?.Invoke(amount);
+    }
+
+    //Called when enemies need to be frozen and skip some turns
+    public void FreezeEnemy()
+    {
+        onFreezeEnemy?.Invoke();
     }
 }

@@ -170,16 +170,14 @@ namespace Completed
 			//Instantiate a random number of food tiles based on minimum and maximum, at randomized positions.
 			LayoutObjectAtRandom (foodTiles, foodCount.minimum, foodCount.maximum);
 			
-			//Determine number of enemies based on current level number, based on a logarithmic progression
-			int enemyCount = (int)Mathf.Log(level, 2f);
-			
 			//Instantiate a random number of enemies based on minimum and maximum, at randomized positions.
-			LayoutObjectAtRandom (enemyTiles, enemyCount, enemyCount);
+			LayoutObjectAtRandom (enemyTiles, level, level);
 			
 			//Instantiate the players base tile in the down right hand corner of our game board
 			Instantiate (playersBase, new Vector3 (0, 0, 0f), Quaternion.identity);
 
-            FillPathfindingDebugNodes(enemyCount);
+            //Fill the list with pathfinding debug nodes for each enemy, level = enemies count
+            FillPathfindingDebugNodes(level);
         }
 
         private void FillPathfindingDebugNodes(int enemyCount)
