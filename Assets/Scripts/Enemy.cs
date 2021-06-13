@@ -53,15 +53,6 @@ namespace Completed
             GameEvents.instance.onFreezeEnemy -= FreezeEnemy;
         }
 
-        //Override the AttemptMove function of MovingObject to include functionality needed for Enemy to skip turns.
-        //See comments in MovingObject for more on how base AttemptMove function works.
-        protected override void AttemptMove <T, E> (int xDir, int yDir)
-		{
-			//Call the AttemptMove function from MovingObject.
-			base.AttemptMove <T, E> (xDir, yDir);
-		}
-
-
         //MoveEnemy is called by the GameManger each turn to tell each Enemy to try to move towards the player.
         public void MoveEnemy()
         {

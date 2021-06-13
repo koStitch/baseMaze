@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Completed
@@ -9,7 +8,6 @@ namespace Completed
 	{
 		public float restartLevelDelay = 1f;		//Delay time in seconds to restart level.
 		public int pointsPerFood = 10;				//Number of points to add to player food points when picking up a food object.
-		public int pointsPerSoda = 20;				//Number of points to add to player food points when picking up a soda object.
 		public int enemyDamage = 1;					//How much damage a player does to a enemy when hitting it.
 		
 		public AudioClip moveSound1;				//1 of 2 Audio clips to play when player moves.
@@ -206,14 +204,6 @@ namespace Completed
 			//Load the last scene loaded, in this case Main, the only scene in the game. And we load it in "Single" mode so it replace the existing one
             //and not load all the scene object in the current scene.
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
-		}
-
-		//LoseFood is called when an enemy attacks the player.
-		//It takes a parameter loss which specifies how many points to lose.
-		public void LoseFood (int loss)
-		{
-			//Set the trigger for the player animator to transition to the playerHit animation.
-			animator.SetTrigger ("playerHit");
 		}
     }
 }

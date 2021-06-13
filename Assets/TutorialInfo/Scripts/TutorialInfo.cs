@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,9 +8,6 @@ public class TutorialInfo : MonoBehaviour
 
 	// allow user to choose whether to show this menu 
 	public bool showAtStart = true;
-
-	// location that Visit Tutorial button sends the user
-	public string url;
 
 	// store the GameObject which renders the overlay info
 	public GameObject overlay;
@@ -59,10 +54,6 @@ public class TutorialInfo : MonoBehaviour
 		{
 			ShowLaunchScreen();
 		}
-		else 
-		{
-			StartGame ();
-		}	
 	}
 
 	// show overlay info, pausing game time, disabling the audio listener 
@@ -73,12 +64,6 @@ public class TutorialInfo : MonoBehaviour
 		mainListener.enabled = false;
 		overlay.SetActive (true);
     }
-
-	// open the stored URL for this content in a web browser
-	public void LaunchTutorial()
-	{
-		Application.OpenURL (url);
-	}
 
 	// continue to play, by ensuring the preference is set correctly, the overlay is not active, 
 	// and that the audio listener is enabled, and time scale is 1 (normal)
@@ -93,10 +78,4 @@ public class TutorialInfo : MonoBehaviour
             Completed.GameManager.instance.InitGame(columns, rows, minObstacles, maxObstacles);
         }
     }
-
-	// set the boolean storing show at start status to equal the UI toggle's status
-	public void ToggleShowAtLaunch()
-	{
-		PlayerPrefs.SetInt(showAtStartPrefsKey, showAtStart ? 1 : 0);
-	}
 }

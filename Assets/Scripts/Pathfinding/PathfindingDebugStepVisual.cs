@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Utils;
 using GM = Completed.GameManager;
 
 public class PathfindingDebugStepVisual : MonoBehaviour
@@ -84,24 +83,23 @@ public class PathfindingDebugStepVisual : MonoBehaviour
 
                     visualNode.gameObject.SetActive(true);
 
-                    Color backgroundColor = Color.white;
+                    Color backgroundColor = visualNode.GetComponent<SpriteRenderer>().color;
 
                     if (isInClosedList)
                     {
                         backgroundColor = new Color(1, 0, 0);
                     }
-                    else if (isInOpenList)
+
+                    if (isInOpenList)
                     {
-                        backgroundColor = UtilsClass.GetColorFromString("009AFF");
+                        backgroundColor = Color.grey;
                     }
-                    else if (isCurrent)
+
+                    if (isCurrent)
                     {
                         backgroundColor = new Color(0, 1, 0);
                     }
-                    else
-                    {
-                        return;
-                    }
+
 
                     visualNode.GetComponent<SpriteRenderer>().color = backgroundColor;
                 });

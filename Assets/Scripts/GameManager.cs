@@ -11,7 +11,6 @@ namespace Completed
 	{
 		public float levelStartDelay = 2f;						//Time to wait before starting level, in seconds.
 		public float turnDelay = 0.1f;							//Delay between each Player turn.
-		public int playerFoodPoints = 100;						//Starting value for Player food points.
         public int playersBaseHp = 20;                          //Starting value for Players base health points.
         public static GameManager instance = null;				//Static instance of GameManager which allows it to be accessed by any other script.
 		[HideInInspector]
@@ -164,7 +163,7 @@ namespace Completed
 		public void GameOver()
 		{
 			//Set levelText to display number of levels passed and game over message
-			levelText.text = "After " + level + " days, you starved.";
+			levelText.text = "After " + level + " days, you got overrun.";
 			
 			//Enable black background image gameObject.
 			levelImage.SetActive(true);
