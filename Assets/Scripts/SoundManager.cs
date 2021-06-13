@@ -20,7 +20,9 @@ namespace Managers
 			else if (instance != this)
 				//Destroy this, this enforces our singleton pattern so there can only be one instance of SoundManager.
 				Destroy (gameObject);
-		}
+            //Sets this to not be destroyed when reloading scene
+            DontDestroyOnLoad(gameObject);
+        }
 		
 		
 		//Used to play single sound clips.
