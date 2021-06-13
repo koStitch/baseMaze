@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Completed
@@ -27,11 +28,17 @@ namespace Completed
 		//Start overrides the Start function of MovingObject
 		protected override void Start ()
 		{
+            GameEvents.instance.onLevelEnd += LevelEnd;
             //Get a component reference to the Player's animator component
             animator = GetComponent<Animator>();
 			
 			//Call the Start function of the MovingObject base class.
 			base.Start ();
+        }
+
+        private void OnDestroy()
+        {
+            GameEvents.instance.onLevelEnd -= LevelEnd;
         }
 
         private void Update()
@@ -183,6 +190,15 @@ namespace Completed
 				other.gameObject.SetActive (false);
 			}
 		}
+
+        private void LevelEnd()
+        {
+            //Invoke the Restart function to start the next level with a delay of restartLevelDelay (default 1 second).
+            Invoke("Restart", restartLevelDelay);
+
+            //Disable the player object since level is over.
+            enabled = false;
+        }
 
 		//Restart reloads the scene when called.
 		private void Restart ()

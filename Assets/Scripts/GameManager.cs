@@ -27,6 +27,11 @@ namespace Completed
 		private bool enemiesMoving;								//Boolean to check if enemies are moving.
 		private bool doingSetup = true;							//Boolean to check if we're setting up board, prevent Player from moving during setup.
 
+        private int columns;
+        private int rows;
+        private int minObstacles;
+        private int maxObstacles;
+
         public BoardManager GetBoardScript() { return boardScript; }
 
         //Awake is always called before any Start functions
@@ -53,12 +58,34 @@ namespace Completed
 			//Get a component reference to the attached BoardManager script
 			boardScript = GetComponent<BoardManager>();
 		}
-		
-		//Initializes the game for each level.
-		public void InitGame(int columns, int rows, int minObstacles, int maxObstacles)
+
+        //this is called only once, and the paramter tell it to be called only after the scene was loaded
+        //(otherwise, our Scene Load callback would be called the very first load, and we don't want that)
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static public void CallbackInitialization()
+        {
+            //register the callback to be called everytime the scene is loaded
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        //This is called each time a scene is loaded.
+        static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            instance.level++;
+            instance.InitGame(instance.columns, instance.rows, instance.minObstacles, instance.maxObstacles);
+        }
+
+        //Initializes the game for each level.
+        public void InitGame(int columns, int rows, int minObstacles, int maxObstacles)
 		{
-			//While doingSetup is true the player can't move, prevent player from moving while title card is up.
-			doingSetup = true;
+            pathfindingDebugCounter = -1;
+            this.columns = columns;
+            this.rows = rows;
+            this.minObstacles = minObstacles;
+            this.maxObstacles = maxObstacles;
+            boardScript.VisualNodesList.Clear();
+            //While doingSetup is true the player can't move, prevent player from moving while title card is up.
+            doingSetup = true;
 
             //Get a reference to our text LevelText's text component by finding it by name and calling GetComponent.
             levelText = GameObject.Find("LevelText").GetComponent<Text>();
@@ -125,6 +152,11 @@ namespace Completed
         {
             //Remove Enemy from the List enemies.
             enemies.Remove(enemy);
+
+            if (enemies.Count == 0)
+            {
+                GameEvents.instance.LevelEnd();
+            }
         }
 		
 		

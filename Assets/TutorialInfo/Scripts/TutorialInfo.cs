@@ -43,28 +43,26 @@ public class TutorialInfo : MonoBehaviour
 		// have we already shown this once?
 		if(alreadyShownThisSession)
 		{
-			StartGame();
+            return;
 		}
-		else
+
+		alreadyShownThisSession = true;
+
+		// Check player prefs for show at start preference
+		if (PlayerPrefs.HasKey(showAtStartPrefsKey))
 		{
-			alreadyShownThisSession = true;
-
-			// Check player prefs for show at start preference
-			if (PlayerPrefs.HasKey(showAtStartPrefsKey))
-			{
-				showAtStart = PlayerPrefs.GetInt(showAtStartPrefsKey) == 1;
-			}
-
-			// show the overlay info or continue to play the game
-			if (showAtStart) 
-			{
-				ShowLaunchScreen();
-			}
-			else 
-			{
-				StartGame ();
-			}	
+			showAtStart = PlayerPrefs.GetInt(showAtStartPrefsKey) == 1;
 		}
+
+		// show the overlay info or continue to play the game
+		if (showAtStart) 
+		{
+			ShowLaunchScreen();
+		}
+		else 
+		{
+			StartGame ();
+		}	
 	}
 
 	// show overlay info, pausing game time, disabling the audio listener 

@@ -7,6 +7,7 @@ public class GameEvents : MonoBehaviour
     public event Action onPlayersBaseHealthTextUpdate;
     public event Action<int> onPlayersBaseHealthChange;
     public event Action onFreezeEnemy;
+    public event Action onLevelEnd;
 
     private void Awake()
     {
@@ -42,5 +43,11 @@ public class GameEvents : MonoBehaviour
     public void FreezeEnemy()
     {
         onFreezeEnemy?.Invoke();
+    }
+
+    //Called when level is finished
+    public void LevelEnd()
+    {
+        onLevelEnd?.Invoke();
     }
 }
