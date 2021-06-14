@@ -123,5 +123,10 @@ namespace UI
                 }
             }
         }
+
+        public void DebugToggle()
+        {
+            Managers.GameManager.instance.showDebug = !Managers.GameManager.instance.showDebug;
+        }
     }
 }

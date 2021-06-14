@@ -22,6 +22,8 @@ namespace Managers
         public int minRows = 8;
         public int maxColumns = 16;
         public int maxRows = 16;
+        [HideInInspector]
+        public bool showDebug = true;
 
         private Text levelText;									//Text to display current level number.
 		private GameObject levelImage;							//Image to block out level as levels are being set up, background for levelText.
@@ -131,8 +133,19 @@ namespace Managers
             //Disable the levelImage gameObject.
             levelImage.SetActive(false);
 
-            //Start showing path from enemies to the base
-            StartCoroutine(ShowEnemiesPath());
+            if (showDebug)
+            {
+                //Start showing path from enemies to the base
+                StartCoroutine(ShowEnemiesPath());
+            }
+            else
+            {
+                doingSetup = false;
+                playersTurn = true;
+            }
+
+
+
         }
 		
 		//Update is called every frame.
