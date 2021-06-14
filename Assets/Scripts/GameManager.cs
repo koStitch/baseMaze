@@ -18,6 +18,10 @@ namespace Managers
         public bool playersTurn = false;                        //Boolean to check if it's players turn, hidden in inspector but public.
         [HideInInspector]
         public int pathfindingDebugCounter = -1;                //Counts how many times did we show debug pathfinding visualisation (1 per enemy)
+        public int minColumns = 8;
+        public int minRows = 8;
+        public int maxColumns = 16;
+        public int maxRows = 16;
 
         private Text levelText;									//Text to display current level number.
 		private GameObject levelImage;							//Image to block out level as levels are being set up, background for levelText.
@@ -26,6 +30,7 @@ namespace Managers
 		private List<Enemy> enemies;							//List of all Enemy units, used to issue them move commands.
 		private bool enemiesMoving;								//Boolean to check if enemies are moving.
 		private bool doingSetup = true;							//Boolean to check if we're setting up board, prevent Player from moving during setup.
+        private Camera mainCamera;
 
         private int columns;
         private int rows;
@@ -57,7 +62,9 @@ namespace Managers
 			
 			//Get a component reference to the attached BoardManager script
 			boardScript = GetComponent<BoardManager>();
-		}
+
+            mainCamera = Camera.main;
+        }
 
         //this is called only once, and the paramter tell it to be called only after the scene was loaded
         //(otherwise, our Scene Load callback would be called the very first load, and we don't want that)
@@ -107,6 +114,8 @@ namespace Managers
 
             //Call the SetupScene function of the BoardManager script, pass it current level number.
             boardScript.SetupScene(level, columns, rows, minObstacles, maxObstacles);
+
+            CameraSetup();
         }
 		
 		
@@ -224,6 +233,21 @@ namespace Managers
             playersTurn = true;
             //Delete all of the node holders because they do not contain the final path
             boardScript.DeleteNodeHolders();
+        }
+
+        private void CameraSetup()
+        {
+            var cameraPosX = mainCamera.transform.position.x + columns * 0.5f;
+            var cameraPosY = mainCamera.transform.position.y + rows * 0.5f;
+            var newCameraSize = mainCamera.orthographicSize;
+            if (rows != minRows)
+            {
+                newCameraSize += (rows - minRows) * 0.5f;
+            }
+
+            Vector3 newCameraPos = new Vector3(cameraPosX, cameraPosY, mainCamera.transform.position.z);
+            mainCamera.transform.position = newCameraPos;
+            mainCamera.orthographicSize = newCameraSize;
         }
     }
 }

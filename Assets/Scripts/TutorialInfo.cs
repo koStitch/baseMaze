@@ -21,10 +21,10 @@ namespace UI
         private static bool alreadyShownThisSession = false;
 
         // we store user input in here for number of columns in level
-        public Text columnsInputField;
+        public InputField columnsInputField;
 
         // we store user input in here for number of rows in level
-        public Text rowsInputField;
+        public InputField rowsInputField;
 
         // we store user input in here for min number of obstacles in level
         public Text minObstaclesInputField;
@@ -55,6 +55,19 @@ namespace UI
             }
         }
 
+        private void Start()
+        {
+            columnsInputField.onEndEdit.AddListener((str) =>
+            {
+                OnInputFieldValueChanged();
+            });
+
+            rowsInputField.onEndEdit.AddListener((str) =>
+            {
+                OnInputFieldValueChanged();
+            });
+        }
+
         // show overlay info, pausing game time, disabling the audio listener 
         // and enabling the overlay info parent game object
         public void ShowLaunchScreen()
@@ -75,6 +88,39 @@ namespace UI
                 && int.TryParse(minObstaclesInputField.text, out int minObstacles) && int.TryParse(maxObstaclesInputField.text, out int maxObstacles))
             {
                 Managers.GameManager.instance.InitGame(columns, rows, minObstacles, maxObstacles);
+            }
+        }
+
+        //Keeps user input for columns and rows at set min/max range
+        public void OnInputFieldValueChanged()
+        {
+            var minColumns = Managers.GameManager.instance.minColumns;
+            var maxColumns = Managers.GameManager.instance.maxColumns;
+            var minRows = Managers.GameManager.instance.minRows;
+            var maxRows = Managers.GameManager.instance.maxRows;
+
+            if (int.TryParse(columnsInputField.text, out int columns))
+            {
+                if (columns < minColumns)
+                {
+                    columnsInputField.text = minColumns.ToString();
+                }
+                else if (columns > maxColumns)
+                {
+                    columnsInputField.text = maxColumns.ToString();
+                }
+            }
+
+            if (int.TryParse(rowsInputField.text, out int rows))
+            {
+                if (rows < minRows)
+                {
+                    rowsInputField.text = minRows.ToString();
+                }
+                else if (rows > maxRows)
+                {
+                    rowsInputField.text = maxRows.ToString();
+                }
             }
         }
     }
