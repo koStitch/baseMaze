@@ -62,8 +62,6 @@ namespace Managers
 			
 			//Get a component reference to the attached BoardManager script
 			boardScript = GetComponent<BoardManager>();
-
-            mainCamera = Camera.main;
         }
 
         //this is called only once, and the paramter tell it to be called only after the scene was loaded
@@ -85,6 +83,7 @@ namespace Managers
         //Initializes the game for each level.
         public void InitGame(int columns, int rows, int minObstacles, int maxObstacles)
 		{
+            mainCamera = Camera.main;
             pathfindingDebugCounter = -1;
             this.columns = columns;
             this.rows = rows;
